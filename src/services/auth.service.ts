@@ -24,7 +24,7 @@ export const authService = {
         .set({
           uid: userRecord.uid,
           email: data.email,
-          name: data.nama,
+          nama: data.nama,
           nomorTelepon: data.nomorTelepon,
           alamat: data.alamat,
         });
