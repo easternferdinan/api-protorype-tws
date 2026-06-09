@@ -1,4 +1,5 @@
-import { auth, firestore } from "../configs/firebase.js";
+import { auth } from "../configs/firebase.js";
+import { customersRepository } from "../repositories/customers.repository.js";
 
 import type {
   LoginSchemaType,
@@ -18,16 +19,13 @@ export const authService = {
     });
 
     try {
-      await firestore
-        .collection("customers")
-        .doc(userRecord.uid)
-        .set({
-          uid: userRecord.uid,
-          email: data.email,
-          nama: data.nama,
-          nomorTelepon: data.nomorTelepon,
-          alamat: data.alamat,
-        });
+      await customersRepository.create({
+        uid: userRecord.uid,
+        email: data.email,
+        nama: data.nama,
+        nomorTelepon: data.nomorTelepon,
+        alamat: data.alamat,
+      });
 
       return { uid: userRecord.uid };
     } catch (error) {
