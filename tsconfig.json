@@ -19,6 +19,7 @@
 
     // Other Outputs
     "sourceMap": true,
+    "resolveJsonModule": true,
     "declaration": false,
     "declarationMap": false,
 
