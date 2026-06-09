@@ -1,3 +1,5 @@
+/// <reference types="node" />0-pppppppppppppppppp\
+
 const PORT = process.env.PORT ?? 3000;
 const BASE = `http://localhost:${PORT}`;
 
