@@ -1,5 +1,3 @@
-/// <reference types="node" />0-pppppppppppppppppp\
-
 const PORT = process.env.PORT ?? 3000;
 const BASE = `http://localhost:${PORT}`;
 
@@ -26,6 +24,17 @@ async function main() {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ email: "bad", password: "12345678" }),
+    });
+    const body = await res.json();
+    if (res.status !== 400) throw new Error(`Expected 400, got ${res.status}`);
+    if (body.success === undefined) throw new Error("Expected success field");
+  });
+
+  await test("login rejects invalid email", async () => {
+    const res = await fetch(`${BASE}/api/auth/login`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email: "not-an-email" }),
     });
     const body = await res.json();
     if (res.status !== 400) throw new Error(`Expected 400, got ${res.status}`);

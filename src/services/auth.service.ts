@@ -7,8 +7,10 @@ import type {
 } from "../schemas/auth.schema.js";
 
 export const authService = {
-  async login(_data: LoginSchemaType) {
-    throw new Error("Not implemented");
+  async login(data: LoginSchemaType) {
+    const userRecord = await auth.getUserByEmail(data.email);
+    const customer = await customersRepository.get(userRecord.uid);
+    return { customer };
   },
 
   async register(data: RegisterSchemaType) {
