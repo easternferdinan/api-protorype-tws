@@ -1,5 +1,5 @@
-import type { Request, Response, NextFunction } from "express";
-import { z } from "zod";
+import type { NextFunction, Request, Response } from "express";
+import type { z } from "zod";
 import { formatZodError } from "../utils/format-zod-error.js";
 
 export function validate(schema: z.ZodType) {
