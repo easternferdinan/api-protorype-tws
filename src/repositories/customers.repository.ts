@@ -18,4 +18,8 @@ export const customersRepository = {
     if (!doc.exists) return null;
     return { uid: doc.id, ...doc.data() } as Customer;
   },
+
+  async update(uid: string, data: Partial<Customer>): Promise<void> {
+    await firestore.collection("customers").doc(uid).set(data, { merge: true });
+  },
 };
