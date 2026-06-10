@@ -3,7 +3,8 @@ import { firestore } from "../configs/firebase.js";
 
 export interface Transaction {
   transactionId: string;
-  customerUid: string;
+  customerUid?: string;
+  email?: string;
   layanan: string;
   status: string;
   beratCucian: number;
@@ -30,7 +31,20 @@ export const transactionsRepository = {
     if (snapshot.empty) return [];
 
     return snapshot.docs.map((doc) => {
-      return { ...doc.data() } as Transaction;
+      return { transactionId: doc.id, ...doc.data() } as Transaction;
+    });
+  },
+
+  async listAll(): Promise<Transaction[]> {
+    const snapshot = await firestore
+      .collection("transactions")
+      .orderBy("tanggalDiterima", "desc")
+      .get();
+
+    if (snapshot.empty) return [];
+
+    return snapshot.docs.map((doc) => {
+      return { transactionId: doc.id, ...doc.data() } as Transaction;
     });
   },
 
@@ -44,6 +58,6 @@ export const transactionsRepository = {
     if (snapshot.empty) return null;
 
     const doc = snapshot.docs[0]!;
-    return { ...doc.data() } as Transaction;
+    return { transactionId: doc.id, ...doc.data() } as Transaction;
   },
 };

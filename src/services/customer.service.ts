@@ -4,6 +4,7 @@ import type {
   UpdateCustomerSchemaType,
   UpdatePasswordSchemaType,
 } from "../schemas/customer.schema.js";
+import type { Customer } from "../repositories/customers.repository.js";
 
 export const customerService = {
   async getProfile(uid: string) {
@@ -26,5 +27,27 @@ export const customerService = {
 
   async updatePassword(uid: string, data: UpdatePasswordSchemaType) {
     await auth.updateUser(uid, { password: data.newPassword });
+  },
+
+  // --- Admin endpoints ---
+
+  async listAll() {
+    return customersRepository.listAll();
+  },
+
+  async create(data: Omit<Customer, "uid">) {
+    const uid = data.email;
+    const customer: Customer = { uid, ...data };
+    await customersRepository.create(customer);
+    return customer;
+  },
+
+  async update(uid: string, data: Partial<Omit<Customer, "uid">>) {
+    await customersRepository.update(uid, data);
+    return customersRepository.get(uid);
+  },
+
+  async delete(uid: string) {
+    await customersRepository.delete(uid);
   },
 };

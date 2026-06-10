@@ -1,8 +1,17 @@
 import { z } from "zod";
 
+export const createCustomerSchema = z.object({
+  email: z.string().min(1),
+  nama: z.string().min(1),
+  nomorTelepon: z.string().min(1),
+  alamat: z.string().min(1),
+});
+
+export type CreateCustomerSchemaType = z.infer<typeof createCustomerSchema>;
+
 export const updateCustomerSchema = z.object({
   nama: z.string().min(1).optional(),
-  nomorTelepon: z.string().min(10).optional(),
+  nomorTelepon: z.string().min(1).optional(),
   alamat: z.string().min(1).optional(),
 });
 

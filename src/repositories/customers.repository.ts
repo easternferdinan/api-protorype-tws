@@ -22,4 +22,21 @@ export const customersRepository = {
   async update(uid: string, data: Record<string, unknown>): Promise<void> {
     await firestore.collection("customers").doc(uid).set(data, { merge: true });
   },
+
+  async listAll(): Promise<Customer[]> {
+    const snapshot = await firestore
+      .collection("customers")
+      .orderBy("nama")
+      .get();
+
+    if (snapshot.empty) return [];
+
+    return snapshot.docs.map((doc) => {
+      return { uid: doc.id, ...doc.data() } as Customer;
+    });
+  },
+
+  async delete(uid: string): Promise<void> {
+    await firestore.collection("customers").doc(uid).delete();
+  },
 };
