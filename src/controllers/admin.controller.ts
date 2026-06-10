@@ -24,6 +24,33 @@ export async function listCustomers(_req: Request, res: Response) {
   res.json({ success: true, customers });
 }
 
+export async function createTransaction(req: Request, res: Response) {
+  const transaction = await transactionService.adminCreate(req.body);
+  res.status(201).json({ success: true, transaction });
+}
+
+export async function updateTransaction(req: Request, res: Response) {
+  const id = req.params.id as string;
+  const transaction = await transactionService.adminUpdate(id, req.body);
+  res.json({ success: true, transaction });
+}
+
+export async function viewProof(req: Request, res: Response) {
+  const id = req.params.transactionId as string;
+  const url = await transactionService.getProof(id);
+  if (url) {
+    res.redirect(302, url);
+  } else {
+    res.status(404).json({ success: false, message: "Payment proof not found" });
+  }
+}
+
+export async function deleteTransaction(req: Request, res: Response) {
+  const id = req.params.id as string;
+  await transactionService.adminDelete(id);
+  res.json({ success: true });
+}
+
 export async function createCustomer(req: Request, res: Response) {
   const customer = await customerService.create(req.body);
   res.status(201).json({ success: true, customer });

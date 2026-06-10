@@ -29,3 +29,18 @@ export async function createTransaction(
   const transaction = await transactionService.create(uid, layanan);
   res.status(201).json({ success: true, transaction });
 }
+
+export async function updateTransaction(
+  req: Request,
+  res: Response,
+  _next: NextFunction,
+) {
+  const uid = req.uid;
+  if (!uid) {
+    return res.status(401).json({ success: false, message: "Unauthorized" });
+  }
+
+  const id = req.params.id as string;
+  const transaction = await transactionService.update(id, uid, req.body);
+  res.json({ success: true, transaction });
+}

@@ -3,6 +3,10 @@ import {
   login,
   update,
   listTransactions,
+  createTransaction,
+  updateTransaction,
+  deleteTransaction,
+  viewProof,
   listCustomers,
   createCustomer,
   updateCustomer,
@@ -10,6 +14,10 @@ import {
 } from "../controllers/admin.controller.js";
 import { validate } from "../middlewares/validate.middleware.js";
 import { loginSchema, updateAdminSchema } from "../schemas/admin.schema.js";
+import {
+  adminCreateTransactionSchema,
+  adminUpdateTransactionSchema,
+} from "../schemas/transaction.schema.js";
 import { createCustomerSchema } from "../schemas/customer.schema.js";
 
 const router = Router();
@@ -19,6 +27,10 @@ router.put("/auth", validate(updateAdminSchema), update);
 
 // TODO: add admin auth middleware
 router.get("/transactions", listTransactions);
+router.post("/transactions", validate(adminCreateTransactionSchema), createTransaction);
+router.put("/transactions/:id", validate(adminUpdateTransactionSchema), updateTransaction);
+router.delete("/transactions/:id", deleteTransaction);
+router.get("/proof/:transactionId", viewProof);
 
 // TODO: add admin auth middleware
 router.get("/customers", listCustomers);
