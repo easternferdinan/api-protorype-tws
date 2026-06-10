@@ -1,5 +1,5 @@
-import { firestore } from "../configs/firebase.js";
 import type { Timestamp } from "firebase-admin/firestore";
+import { firestore } from "../configs/firebase.js";
 
 export interface Transaction {
   transactionId: string;

@@ -10,6 +10,11 @@ import { createTransactionSchema } from "../schemas/transaction.schema.js";
 const router = Router();
 
 router.get("/", authenticate, getTransactions);
-router.post("/", authenticate, validate(createTransactionSchema), createTransaction);
+router.post(
+  "/",
+  authenticate,
+  validate(createTransactionSchema),
+  createTransaction,
+);
 
 export default router;

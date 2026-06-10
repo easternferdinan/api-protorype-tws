@@ -8,10 +8,7 @@ function generateTransactionId(lastTxId: string | null): string {
   const year = date.getFullYear();
   const todayKey = `${day}${month}${year}`;
 
-  if (
-    lastTxId?.startsWith("D") &&
-    lastTxId.substring(1, 9) === todayKey
-  ) {
+  if (lastTxId?.startsWith("D") && lastTxId.substring(1, 9) === todayKey) {
     const seq = parseInt(lastTxId.substring(9, 12), 10) + 1;
     return `D${todayKey}${String(seq).padStart(3, "0")}`;
   }
