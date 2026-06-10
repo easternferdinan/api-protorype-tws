@@ -12,4 +12,5 @@ export function errorHandler(
     message: err.message,
     ...(process.env.NODE_ENV === "development" && { stack: err.stack }),
   });
+  console.error(err);
 }

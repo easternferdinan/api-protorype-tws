@@ -3,6 +3,7 @@ import { errorHandler } from "./middlewares/error.middleware.js";
 import { responseLogger } from "./middlewares/logger.middleware.js";
 import authRouter from "./routes/auth.routes.js";
 import customerRouter from "./routes/customer.routes.js";
+import transactionRouter from "./routes/transaction.routes.js";
 
 const app = express();
 
@@ -11,6 +12,7 @@ app.use(responseLogger);
 
 app.use("/api/auth", authRouter);
 app.use("/api/customers", customerRouter);
+app.use("/api/transactions", transactionRouter);
 
 app.use(errorHandler);
 
