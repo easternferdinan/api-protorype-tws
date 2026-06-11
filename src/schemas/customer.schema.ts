@@ -22,3 +22,9 @@ export const updatePasswordSchema = z.object({
 });
 
 export type UpdatePasswordSchemaType = z.infer<typeof updatePasswordSchema>;
+
+export const updateFcmTokenSchema = z.object({
+  fcmToken: z.string().min(1),
+});
+
+export type UpdateFcmTokenSchemaType = z.infer<typeof updateFcmTokenSchema>;

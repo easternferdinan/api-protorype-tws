@@ -29,6 +29,20 @@ export async function updateProfile(
   res.json({ customer });
 }
 
+export async function updateFcmToken(
+  req: Request,
+  res: Response,
+  _next: NextFunction,
+) {
+  const uid = req.uid;
+  if (!uid) {
+    return res.status(401).json({ success: false, message: "Unauthorized" });
+  }
+
+  await customerService.updateFcmToken(uid, req.body.fcmToken);
+  res.json({ success: true });
+}
+
 export async function updatePassword(
   req: Request,
   res: Response,

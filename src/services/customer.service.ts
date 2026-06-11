@@ -1,8 +1,10 @@
-import { auth } from "../configs/firebase.js";
+import { auth, firestore } from "../configs/firebase.js";
+import { FieldValue } from "firebase-admin/firestore";
 import { customersRepository } from "../repositories/customers.repository.js";
 import type {
   UpdateCustomerSchemaType,
   UpdatePasswordSchemaType,
+  UpdateFcmTokenSchemaType,
 } from "../schemas/customer.schema.js";
 import type { Customer } from "../repositories/customers.repository.js";
 
@@ -27,6 +29,12 @@ export const customerService = {
 
   async updatePassword(uid: string, data: UpdatePasswordSchemaType) {
     await auth.updateUser(uid, { password: data.newPassword });
+  },
+
+  async updateFcmToken(uid: string, fcmToken: string) {
+    await customersRepository.update(uid, {
+      fcmTokens: FieldValue.arrayUnion(fcmToken),
+    });
   },
 
   // --- Admin endpoints ---

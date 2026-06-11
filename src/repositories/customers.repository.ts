@@ -6,6 +6,7 @@ export interface Customer {
   nama: string;
   nomorTelepon: string;
   alamat: string;
+  fcmTokens?: string[];
 }
 
 export const customersRepository = {
@@ -34,6 +35,17 @@ export const customersRepository = {
     return snapshot.docs.map((doc) => {
       return { uid: doc.id, ...doc.data() } as Customer;
     });
+  },
+
+  async getByEmail(email: string): Promise<Customer | null> {
+    const snapshot = await firestore
+      .collection("customers")
+      .where("email", "==", email)
+      .limit(1)
+      .get();
+    if (snapshot.empty) return null;
+    const doc = snapshot.docs[0]!;
+    return { uid: doc.id, ...doc.data() } as Customer;
   },
 
   async delete(uid: string): Promise<void> {
