@@ -67,3 +67,13 @@ export async function deleteCustomer(req: Request, res: Response) {
   await customerService.delete(email);
   res.json({ success: true });
 }
+
+export async function updateFcmToken(req: Request, res: Response) {
+  const admin = await adminService.getFirst();
+  if (!admin) {
+    return res.status(404).json({ success: false, message: "Admin not found" });
+  }
+  const { fcmToken } = req.body;
+  await adminService.updateFcmToken(admin.id, fcmToken);
+  res.json({ success: true });
+}

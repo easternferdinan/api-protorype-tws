@@ -3,6 +3,7 @@ import { firestore } from "../configs/firebase.js";
 export interface Admin {
   email: string;
   password: string;
+  fcmTokens?: string[];
 }
 
 const COLLECTION = "admins";
@@ -17,7 +18,7 @@ export const adminsRepository = {
     if (snapshot.empty) return null;
 
     const doc = snapshot.docs[0];
-    return doc.data() as Admin;
+    return doc!.data() as Admin;
   },
 
   async getDocIdByEmail(email: string): Promise<string | null> {
@@ -27,14 +28,15 @@ export const adminsRepository = {
       .get();
 
     if (snapshot.empty) return null;
-    return snapshot.docs[0].id;
+    return snapshot.docs[0]!.id;
   },
 
   async getFirst(): Promise<{ id: string; data: Admin } | null> {
     const snapshot = await firestore.collection(COLLECTION).limit(1).get();
+    console.log(snapshot.docs);
     if (snapshot.empty) return null;
     const doc = snapshot.docs[0];
-    return { id: doc.id, data: doc.data() as Admin };
+    return { id: doc!.id, data: doc!.data() as Admin };
   },
 
   async updateById(docId: string, data: Partial<Admin>): Promise<void> {

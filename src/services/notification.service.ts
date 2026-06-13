@@ -1,5 +1,6 @@
 import { Timestamp } from "firebase-admin/firestore";
 import { firestore, messaging } from "../configs/firebase.js";
+import { adminsRepository } from "../repositories/admins.repository.js";
 import { customersRepository } from "../repositories/customers.repository.js";
 
 export const notificationService = {
@@ -47,6 +48,40 @@ export const notificationService = {
       console.log(notif.responses);
     } catch (error) {
       console.error("FCM send failed:", error);
+    }
+  },
+
+  async sendToAdmin(
+    event: "Penjemputan",
+    idTransaksi: string,
+  ) {
+    const admin = await adminsRepository.getFirst();
+    if (!admin) return;
+
+    const title = "Pesanan Baru!";
+    const subtitle = `Transaksi ${idTransaksi} telah dibuat.`;
+    const body = `Ada pesanan baru: ${idTransaksi}. Silakan cek aplikasi.`;
+
+    await firestore.collection("notifications").add({
+      date: Timestamp.now(),
+      idTransaksi,
+      isSeen: false,
+      subtitle,
+      target: "admin",
+      title,
+    });
+
+    const tokens = admin.data.fcmTokens ?? [];
+    if (tokens.length === 0) return;
+
+    try {
+      await messaging.sendEachForMulticast({
+        tokens,
+        notification: { title, body },
+        data: { idTransaksi, event },
+      });
+    } catch (error) {
+      console.error("FCM send to admin failed:", error);
     }
   },
 };

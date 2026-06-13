@@ -11,9 +11,10 @@ import {
   createCustomer,
   updateCustomer,
   deleteCustomer,
+  updateFcmToken,
 } from "../controllers/admin.controller.js";
 import { validate } from "../middlewares/validate.middleware.js";
-import { loginSchema, updateAdminSchema } from "../schemas/admin.schema.js";
+import { loginSchema, updateAdminSchema, fcmTokenSchema } from "../schemas/admin.schema.js";
 import {
   adminCreateTransactionSchema,
   adminUpdateTransactionSchema,
@@ -33,6 +34,7 @@ router.delete("/transactions/:id", deleteTransaction);
 router.get("/proof/:transactionId", viewProof);
 
 // TODO: add admin auth middleware
+router.put("/fcm-token", validate(fcmTokenSchema), updateFcmToken);
 router.get("/customers", listCustomers);
 router.post("/customers", validate(createCustomerSchema), createCustomer);
 router.put("/customers/:email", updateCustomer);

@@ -10,5 +10,10 @@ export const updateAdminSchema = z.object({
   password: z.string().min(1).optional(),
 });
 
+export const fcmTokenSchema = z.object({
+  fcmToken: z.string().min(1),
+});
+
 export type LoginSchemaType = z.infer<typeof loginSchema>;
 export type UpdateAdminSchemaType = z.infer<typeof updateAdminSchema>;
+export type FcmTokenSchemaType = z.infer<typeof fcmTokenSchema>;

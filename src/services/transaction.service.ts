@@ -3,6 +3,7 @@ import { firestore } from "../configs/firebase.js";
 import { transactionsRepository } from "../repositories/transactions.repository.js";
 import type { Transaction } from "../repositories/transactions.repository.js";
 import { customersRepository } from "../repositories/customers.repository.js";
+import { notificationService } from "./notification.service.js";
 
 function generateTransactionId(lastTxId: string | null, prefix: string = "D"): string {
   const date = new Date();
@@ -51,6 +52,8 @@ export const transactionService = {
     } as Transaction;
 
     await transactionsRepository.create(transaction);
+
+    notificationService.sendToAdmin("Penjemputan", transactionId);
 
     return {
       ...transaction,

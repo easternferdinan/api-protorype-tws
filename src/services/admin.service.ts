@@ -1,3 +1,4 @@
+import { FieldValue } from "firebase-admin/firestore";
 import { adminsRepository } from "../repositories/admins.repository.js";
 import type {
   LoginSchemaType,
@@ -5,6 +6,16 @@ import type {
 } from "../schemas/admin.schema.js";
 
 export const adminService = {
+  async getFirst() {
+    return adminsRepository.getFirst();
+  },
+
+  async updateFcmToken(docId: string, fcmToken: string) {
+    await adminsRepository.updateById(docId, {
+      fcmTokens: FieldValue.arrayUnion(fcmToken) as unknown as string[],
+    });
+  },
+
   async login(data: LoginSchemaType) {
     const admin = await adminsRepository.getByEmail(data.email);
 
