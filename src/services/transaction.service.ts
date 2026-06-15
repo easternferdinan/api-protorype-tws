@@ -1,11 +1,14 @@
 import { Timestamp } from "firebase-admin/firestore";
 import { firestore } from "../configs/firebase.js";
-import { transactionsRepository } from "../repositories/transactions.repository.js";
-import type { Transaction } from "../repositories/transactions.repository.js";
 import { customersRepository } from "../repositories/customers.repository.js";
+import type { Transaction } from "../repositories/transactions.repository.js";
+import { transactionsRepository } from "../repositories/transactions.repository.js";
 import { notificationService } from "./notification.service.js";
 
-function generateTransactionId(lastTxId: string | null, prefix: string = "D"): string {
+function generateTransactionId(
+  lastTxId: string | null,
+  prefix: string = "D",
+): string {
   const date = new Date();
   const day = String(date.getDate()).padStart(2, "0");
   const month = String(date.getMonth() + 1).padStart(2, "0");
@@ -70,7 +73,7 @@ export const transactionService = {
         const email =
           tx.email ??
           (tx.customerUid
-            ? (await customersRepository.get(tx.customerUid))?.email ?? null
+            ? ((await customersRepository.get(tx.customerUid))?.email ?? null)
             : null);
 
         return {
@@ -86,10 +89,7 @@ export const transactionService = {
   // --- Customer update (e.g., store payment proof URL) ---
 
   async update(id: string, uid: string, data: Record<string, unknown>) {
-    const doc = await firestore
-      .collection("transactions")
-      .doc(id)
-      .get();
+    const doc = await firestore.collection("transactions").doc(id).get();
     if (!doc.exists) {
       const error = new Error("Transaction not found");
       (error as Error & { status?: number }).status = 404;
@@ -104,11 +104,11 @@ export const transactionService = {
 
     await transactionsRepository.update(id, data);
 
-    const updated = await firestore
-      .collection("transactions")
-      .doc(id)
-      .get();
-    const result = { transactionId: updated.id, ...updated.data() } as Transaction;
+    const updated = await firestore.collection("transactions").doc(id).get();
+    const result = {
+      transactionId: updated.id,
+      ...updated.data(),
+    } as Transaction;
     return {
       ...result,
       tanggalDiterima: result.tanggalDiterima.toDate().toISOString(),
@@ -166,10 +166,7 @@ export const transactionService = {
     }
     await transactionsRepository.update(id, sanitized);
 
-    const doc = await firestore
-      .collection("transactions")
-      .doc(id)
-      .get();
+    const doc = await firestore.collection("transactions").doc(id).get();
     if (!doc.exists) {
       const error = new Error("Transaction not found");
       (error as Error & { status?: number }).status = 404;
@@ -191,8 +188,7 @@ export const transactionService = {
   // --- Payment proof ---
 
   async getProof(transactionId: string): Promise<string | null> {
-    const url =
-      `https://res.cloudinary.com/drorlkqbp/image/upload/v1767860336/laundry-app-mobpro/${transactionId}.jpg`;
+    const url = `https://res.cloudinary.com/drorlkqbp/image/upload/v1767860336/laundry-app-mobpro/${transactionId}.jpg`;
     const response = await fetch(url, { method: "HEAD" });
     return response.ok ? url : null;
   },

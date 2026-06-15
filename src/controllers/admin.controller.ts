@@ -1,8 +1,8 @@
 import type { Request, Response } from "express";
 
 import { adminService } from "../services/admin.service.js";
-import { transactionService } from "../services/transaction.service.js";
 import { customerService } from "../services/customer.service.js";
+import { transactionService } from "../services/transaction.service.js";
 
 export async function login(req: Request, res: Response) {
   const result = await adminService.login(req.body);
@@ -41,7 +41,9 @@ export async function viewProof(req: Request, res: Response) {
   if (url) {
     res.redirect(302, url);
   } else {
-    res.status(404).json({ success: false, message: "Payment proof not found" });
+    res
+      .status(404)
+      .json({ success: false, message: "Payment proof not found" });
   }
 }
 

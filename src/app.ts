@@ -4,8 +4,8 @@ import { responseLogger } from "./middlewares/logger.middleware.js";
 import adminRouter from "./routes/admin.routes.js";
 import authRouter from "./routes/auth.routes.js";
 import customerRouter from "./routes/customer.routes.js";
-import transactionRouter from "./routes/transaction.routes.js";
 import notificationRouter from "./routes/notification.routes.js";
+import transactionRouter from "./routes/transaction.routes.js";
 
 const app = express();
 

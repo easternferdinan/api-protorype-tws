@@ -1,5 +1,8 @@
 import { FieldValue } from "firebase-admin/firestore";
-import { adminsRepository } from "../repositories/admins.repository.js";
+import {
+  type Admin,
+  adminsRepository,
+} from "../repositories/admins.repository.js";
 import type {
   LoginSchemaType,
   UpdateAdminSchemaType,
@@ -38,8 +41,11 @@ export const adminService = {
       throw Object.assign(new Error("Admin not found"), { status: 404 });
     }
 
-    await adminsRepository.updateById(admin.id, data);
+    const updateData: Partial<Admin> = {};
+    if (data.email) updateData.email = data.email;
+    if (data.password) updateData.password = data.password;
+    await adminsRepository.updateById(admin.id, updateData);
 
-    return { email: data.email ?? admin.data.email };
+    return { email: updateData.email ?? admin.data.email };
   },
 };

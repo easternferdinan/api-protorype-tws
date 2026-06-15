@@ -1,16 +1,16 @@
 import { Router } from "express";
 import {
   getProfile,
+  updateFcmToken,
   updatePassword,
   updateProfile,
-  updateFcmToken,
 } from "../controllers/customer.controller.js";
 import { authenticate } from "../middlewares/auth.middleware.js";
 import { validate } from "../middlewares/validate.middleware.js";
 import {
   updateCustomerSchema,
-  updatePasswordSchema,
   updateFcmTokenSchema,
+  updatePasswordSchema,
 } from "../schemas/customer.schema.js";
 
 const router = Router();

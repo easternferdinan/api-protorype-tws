@@ -51,10 +51,7 @@ export const notificationService = {
     }
   },
 
-  async sendToAdmin(
-    event: "Penjemputan",
-    idTransaksi: string,
-  ) {
+  async sendToAdmin(event: "Penjemputan", idTransaksi: string) {
     const admin = await adminsRepository.getFirst();
     if (!admin) return;
 

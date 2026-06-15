@@ -1,12 +1,12 @@
-import { auth, firestore } from "../configs/firebase.js";
 import { FieldValue } from "firebase-admin/firestore";
+import { auth, firestore } from "../configs/firebase.js";
+import type { Customer } from "../repositories/customers.repository.js";
 import { customersRepository } from "../repositories/customers.repository.js";
 import type {
   UpdateCustomerSchemaType,
-  UpdatePasswordSchemaType,
   UpdateFcmTokenSchemaType,
+  UpdatePasswordSchemaType,
 } from "../schemas/customer.schema.js";
-import type { Customer } from "../repositories/customers.repository.js";
 
 export const customerService = {
   async getProfile(uid: string) {
