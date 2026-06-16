@@ -3,22 +3,41 @@ import { firestore, messaging } from "../configs/firebase.js";
 import { adminsRepository } from "../repositories/admins.repository.js";
 import { customersRepository } from "../repositories/customers.repository.js";
 
+function notificationTitle(event: string): string {
+  switch (event) {
+    case "Menunggu Pembayaran":
+      return "Cucian Menunggu Pembayaran!";
+    case "Pengantaran":
+      return "Cucian Dalam Pengantaran!";
+    case "Selesai":
+      return "Cucian Anda Telah Selesai!";
+    default:
+      return "Status Cucian Diperbarui";
+  }
+}
+
+function notificationSubtitle(event: string, idTransaksi: string): string {
+  switch (event) {
+    case "Menunggu Pembayaran":
+      return "Silakan lakukan pembayaran dan upload bukti.";
+    case "Pengantaran":
+      return `Pembayaran untuk ${idTransaksi} telah dikonfirmasi. Cucian sedang diantar.`;
+    case "Selesai":
+      return "Terima kasih telah memilih Tjapang Laundry.";
+    default:
+      return `Status transaksi ${idTransaksi} telah diperbarui.`;
+  }
+}
+
 export const notificationService = {
   async send(data: {
     targetEmail: string;
     idTransaksi: string;
-    event: "Menunggu Pembayaran" | "Selesai";
+    event: string;
   }) {
     console.log("Sending notification", data);
-    const title =
-      data.event === "Menunggu Pembayaran"
-        ? "Cucian Menunggu Pembayaran!"
-        : "Cucian Anda Telah Selesai!";
-
-    const subtitle =
-      data.event === "Menunggu Pembayaran"
-        ? "Silakan lakukan pembayaran dan upload bukti."
-        : "Terima kasih telah memilih Tjapang Laundry.";
+    const title = notificationTitle(data.event);
+    const subtitle = notificationSubtitle(data.event, data.idTransaksi);
 
     await firestore.collection("notifications").add({
       date: Timestamp.now(),
@@ -42,6 +61,7 @@ export const notificationService = {
         data: {
           idTransaksi: data.idTransaksi,
           event: data.event,
+          type: "status_update",
         },
       });
       console.log(notif.failureCount, "tokens failed to send");
@@ -51,19 +71,24 @@ export const notificationService = {
     }
   },
 
-  async sendToAdmin(event: "Penjemputan", idTransaksi: string) {
+  async sendToAdmin(event: string, idTransaksi: string) {
     const admin = await adminsRepository.getFirst();
     if (!admin) return;
 
-    const title = "Pesanan Baru!";
-    const subtitle = `Transaksi ${idTransaksi} telah dibuat.`;
-    const body = `Ada pesanan baru: ${idTransaksi}. Silakan cek aplikasi.`;
+    const title =
+      event === "Menunggu Konfirmasi"
+        ? "Bukti Pembayaran Baru!"
+        : "Pesanan Baru!";
+    const body =
+      event === "Menunggu Konfirmasi"
+        ? `Transaksi ${idTransaksi} menunggu konfirmasi pembayaran.`
+        : `Ada pesanan baru: ${idTransaksi}. Silakan cek aplikasi.`;
 
     await firestore.collection("notifications").add({
       date: Timestamp.now(),
       idTransaksi,
       isSeen: false,
-      subtitle,
+      subtitle: body,
       target: "admin",
       title,
     });
@@ -75,7 +100,7 @@ export const notificationService = {
       await messaging.sendEachForMulticast({
         tokens,
         notification: { title, body },
-        data: { idTransaksi, event },
+        data: { idTransaksi, event, type: "status_update" },
       });
     } catch (error) {
       console.error("FCM send to admin failed:", error);

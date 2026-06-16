@@ -102,7 +102,14 @@ export const transactionService = {
       throw error;
     }
 
+    const previousStatus = tx.status;
+
     await transactionsRepository.update(id, data);
+
+    const status = data.status as string | undefined;
+    if (status && status === "Menunggu Konfirmasi" && status !== previousStatus) {
+      notificationService.sendToAdmin("Menunggu Konfirmasi", id);
+    }
 
     const updated = await firestore.collection("transactions").doc(id).get();
     const result = {
@@ -153,6 +160,15 @@ export const transactionService = {
   },
 
   async adminUpdate(id: string, data: Record<string, unknown>) {
+    const doc = await firestore.collection("transactions").doc(id).get();
+    if (!doc.exists) {
+      const error = new Error("Transaction not found");
+      (error as Error & { status?: number }).status = 404;
+      throw error;
+    }
+    const tx = { transactionId: doc.id, ...doc.data() } as Transaction;
+    const previousStatus = tx.status;
+
     const sanitized = { ...data };
     if (typeof sanitized.tanggalSelesai === "string") {
       sanitized.tanggalSelesai = Timestamp.fromDate(
@@ -166,18 +182,33 @@ export const transactionService = {
     }
     await transactionsRepository.update(id, sanitized);
 
-    const doc = await firestore.collection("transactions").doc(id).get();
-    if (!doc.exists) {
+    const status = data.status as string | undefined;
+    if (status && status !== previousStatus) {
+      const notifyStatuses = ["Menunggu Pembayaran", "Pengantaran", "Selesai"];
+      if (notifyStatuses.includes(status)) {
+        const email = tx.email ?? null;
+        if (email) {
+          await notificationService.send({
+            targetEmail: email,
+            idTransaksi: id,
+            event: status,
+          });
+        }
+      }
+    }
+
+    const updated = await firestore.collection("transactions").doc(id).get();
+    if (!updated.exists) {
       const error = new Error("Transaction not found");
       (error as Error & { status?: number }).status = 404;
       throw error;
     }
-    const tx = { transactionId: doc.id, ...doc.data() } as Transaction;
+    const result = { transactionId: updated.id, ...updated.data() } as Transaction;
 
     return {
-      ...tx,
-      tanggalDiterima: tx.tanggalDiterima.toDate().toISOString(),
-      tanggalSelesai: tx.tanggalSelesai?.toDate().toISOString() ?? null,
+      ...result,
+      tanggalDiterima: result.tanggalDiterima.toDate().toISOString(),
+      tanggalSelesai: result.tanggalSelesai?.toDate().toISOString() ?? null,
     };
   },
 
